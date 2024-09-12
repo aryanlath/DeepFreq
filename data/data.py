@@ -9,7 +9,17 @@ def frequency_generator(f, nf, min_sep, dist_distribution):
         jittered_freq(f, nf, min_sep)
     elif dist_distribution == 'normal':
         normal_freq(f, nf, min_sep)
+    elif dist_distribution == 'constant':
+        constant_freq(f, nf, min_sep)
 
+
+def constant_freq(f, nf, min_sep):
+    if 2*min_sep*nf<=1:
+        for i in range(nf):
+            f[i] = -0.5 + i*2*min_sep
+    else:
+        for i in range(nf):
+            f[i] = -0.5 + i*min_sep
 
 def random_freq(f, nf, min_sep):
     """
@@ -64,9 +74,15 @@ def amplitude_generation(dim, amplitude, floor_amplitude=0.1):
         return np.abs(np.random.randn(*dim)) + floor_amplitude
     elif amplitude == 'alternating':
         return np.random.rand(*dim) * 0.5 + 20 * np.random.rand(*dim) * np.random.randint(0, 2, size=dim)
+    elif amplitude == 'constant':
+        amp = np.random.rand(*dim) * (1 - floor_amplitude) + floor_amplitude
+        for i in range(1, dim.shape[0]):
+            amp[i] = amp[0]
+        return amp
+        
 
 
-def gen_signal(num_samples, signal_dim, num_freq, min_sep, distance='normal', amplitude='normal_floor',
+def gen_signal(num_samples, signal_dim, num_freq, min_sep, distance='constant', amplitude='constant',
                floor_amplitude=0.1, variable_num_freq=False):
     s = np.zeros((num_samples, 2, signal_dim))
     xgrid = np.arange(signal_dim)[:, None]
